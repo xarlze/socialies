@@ -6,6 +6,7 @@
     left:10%;
     top:15%;
     height:70%;
+    animation: fadein 0.5s ease-in-out;
 }
 .allFriends>*{
     margin:auto;
@@ -20,7 +21,6 @@
     transform: skewX(-10.5deg);
     background:white;
     color:black;
-    
 }
 
 #allFriendsTitle>h1{
@@ -77,7 +77,7 @@
     -ms-transform: skewX(-10.5deg);
     transform: skewX(-10.5deg);
     color:white;
-    transition: color 0.2s ease-in-out,background 0.2s ease-in-out;
+    transition: color 0.2s ease-in-out,background 0.2s ease-in-out,width 0.2s ease-in-out;
 }
 
 .friend>*{
@@ -104,6 +104,7 @@
 .friend:hover{
     color:black;
     background:rgba(255,255,255,0.85);
+    width:250px;
 }
 .friendPic{
     width: 80px;

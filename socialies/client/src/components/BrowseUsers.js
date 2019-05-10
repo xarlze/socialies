@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router';
-import { getUsers } from '../services/api-helper';
+
 const plusIcon = require('../assets/plus.png')
 const placeholderPic = "https://imgur.com/ugaHSYk.png";
 
@@ -10,40 +10,38 @@ class BrowseUsers extends Component {
         this.state={
             users:[]
         }
-        this.getAll=this.getAll.bind(this);
-    }
-    async getAll(){
-        const users = await getUsers();
-        this.setState({
-            users
-        })
     }
     componentWillMount(){
-        this.getAll();
+        const {users} = this.props
+        this.setState({
+          users
+        })
     }
     render() {
-        const friendsDisplay = this.state.users.map(friend=>(
-            <div
-                className="friend"
-                onClick={()=>{
-                    this.props.history.push(`/friends/${friend.id}`)
-                }}
-            >
-                <img
-                  className="friendPic"
-                  src={friend.picture_url||placeholderPic}
-                />
-                <h1>{friend.first_name}</h1>
-                <img
-                    className="messageIcon"
-                    src={plusIcon}
-                    onClick={e=>{
-                        e.stopPropagation();
-                        this.props.history.push(`/friends/${friend.id}/message`)
-                    }}
-                />
-            </div>
-        ))
+        const friendsDisplay = this.state.users.map(friend=>{
+          if(friend.id!=this.props.myid){
+            return(
+              <div
+                  className="friend"
+                  onClick={()=>{
+                      this.props.history.push(`/browse/${friend.id}`)
+                  }}
+              >
+                  <img
+                    className="friendPic"
+                    src={friend.picture_url||placeholderPic}
+                  />
+                  <h1>{friend.first_name}</h1>
+                  <img
+                      className="messageIcon"
+                      src={plusIcon}
+                      onClick={e=>{
+                          e.stopPropagation();
+                          
+                      }}
+                  />
+              </div>
+          )}})
         return (
           <div
             className="allFriends"

@@ -11,7 +11,6 @@ class Logo extends Component {
         className={`${this.props.type}Logo`}
         onClick={()=>{
             this.props.history.push('/')
-            window.location.reload();
         }}
         src = {logowhite}
       />

@@ -14,7 +14,6 @@ export default class Profile extends Component {
         this.state={
             original:{},
             profile:{
-                id:"",
                 email:"",
                 first_name:"",
                 last_name:"",
@@ -30,16 +29,16 @@ export default class Profile extends Component {
     showPosition(position) {
         let currLat = position.coords.latitude;
         let currLong = position.coords.longitude;
-        
       }
     
-      getLocation() {
+    getLocation() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(this.showPosition);
         } else {
           console.error("Geolocation is not supported by this browser.");
         }
-      }
+    }
+
     handleChange(e) {
         const { name, value } = e.target;
         this.setState(prevState => ({
@@ -83,14 +82,16 @@ export default class Profile extends Component {
       }
     
     render() {
-        console.log(this.state.profile);
         return (
         <form
             id="profileContainer"
-            onSubmit={this.props.handleProfileChange}
+            onSubmit={(e)=>{
+                e.preventDefault();
+                this.props.handleProfileChange(this.state.profile);
+            }}
         >
             <input
-              id="profileFile"
+              id="file"
               name="file"
               type="file"
               onChange={e=>{
@@ -98,12 +99,11 @@ export default class Profile extends Component {
               }}
             />
             <label
-              for="profileFile"
+              for="file"
               id="profilePictureUpload"
               >
-              <p>Upload</p>
               <img
-                id="profilePic"
+                id="profileImage"
                 src={this.state.profile.picture_url||"https://imgur.com/ugaHSYk.png"}
               />
               <br/>
@@ -111,46 +111,59 @@ export default class Profile extends Component {
             <input
                 id="profileFirst"
                 name="first_name"
+                placeholder="first name"
                 value={this.state.profile.first_name}
                 onChange={this.handleChange}
             />
             <input
                 id="profileLast"
                 name="last_name"
+                placeholder="last name"
                 value={this.state.profile.last_name}
                 onChange={this.handleChange}
             />
             <input
                 id="profileEmail"
                 name="email"
+                placeholder="email"
                 value={this.state.profile.email}
                 onChange={this.handleChange}
             />
             <textarea
                 id="profileDescription"
                 name="description"
+                placeholder="description"
                 value={this.state.profile.description}
                 onChange={this.handleChange}
             />
             <select
+                id="profileGender"
                 name="gender"
                 value={this.state.profile.gender}
                 onChange={this.handleChange}
             >
                 <option
+                    id="genderPlaceholder"
                     value=""
-                >Unspecified</option>
+                >Gender</option>
                 <option
-                    value="F"
+                    value="Female"
                 >Female</option>
                 <option
-                    value="M"
+                    value="Male"
                 >Male</option>
                 <option
-                    value="O"
+                    value="Other"
                 >Other</option>
             </select>
-
+            <button
+                type="button"
+                id="logoutButton"
+                onClick={this.props.logout}
+            >Logout</button>
+            <button
+                id="profileSave"
+            >Save</button>
         </form>
         )
     }

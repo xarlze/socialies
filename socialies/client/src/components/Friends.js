@@ -6,6 +6,7 @@ const placeholderPic = "https://imgur.com/ugaHSYk.png";
 
 class Friends extends Component {
   render() {
+    console.log(this.props.friends)
     const friendsDisplay = this.props.friends.map(friend=>(
         <div
             className="friend"
@@ -17,13 +18,13 @@ class Friends extends Component {
               className="friendPic"
               src={friend.picture_url||placeholderPic}
             />
-            <h1>{friend.name.split(" ")[0]}</h1>
+            <h1>{friend.first_name}</h1>
             <img
                 className="messageIcon"
                 src={messageIcon}
                 onClick={e=>{
                     e.stopPropagation();
-                    this.props.history.push(`/friends/${friend.id}/message`)
+                    this.props.history.push(`/friends/${friend.id}/message/${friend.room_id}`)
                 }}
             />
         </div>

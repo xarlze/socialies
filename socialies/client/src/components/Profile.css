@@ -4,7 +4,169 @@
     left:10%;
     top:15%;
     height:70%;
+    animation: fadein 0.5s ease-in-out;
 }
+
 #profileContainer>*{
-    border:none;
+    border:1px solid black;
+    background:none;
+    color:white;
+    transition: color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+#profileContainer>*:focus{
+    background:rgba(255,255,255,1);
+    color:black;
+}
+#profileImage{
+    position:absolute;
+    top:23%;
+    left:50%;
+    margin-left:-400px;
+    width: 290px;
+    height:290px;
+    /* max-width: 30%;
+    max-height: 50%; */
+    border-radius: 50%;
+    object-fit: contain;
+}
+#profileFirst{
+    position:absolute;
+    text-align: left;
+    font-size:50px;
+    top:23%;
+    left:50%;
+    width:190px;
+    height:55px;
+    padding:5px;
+}
+#profileLast{
+    position:absolute;
+    text-align: left;
+    font-size:50px;
+    top:23%;
+    left:50%;
+    margin-left:200px;
+    width:190px;
+    height:55px;
+    padding:5px;
+}
+#profileEmail{
+    position:absolute;
+    text-align: left;
+    font-size:28px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:70px;
+    width:250px;
+    height:40px;
+    padding:5px;
+    /* background:white; */
+}
+#friendGender{
+    position:absolute;
+    text-align: left;
+    font-size:28px;
+    top:23%;
+    left:50%;
+    margin-left:260px;
+    margin-top:70px;
+    width:140px;
+    height:40px;
+    padding:5px;
+    /* background:white; */
+}
+#profileGender{
+    position:absolute;
+    text-align: left;
+    font-size:25px;
+    top:23%;
+    left:50%;
+    margin-left:260px;
+    margin-top:70px;
+    width:140px;
+    height:50px;
+}
+
+#profileDescription{
+    position:absolute;
+    text-align: left;
+    font-size:30px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:120px;
+    width:390px;
+    height:100px;
+    padding:5px;
+}
+#profileSave{
+    position:absolute;
+    text-align: center;
+    text-transform: uppercase;
+    font-size:30px;
+    top:23%;
+    left:50%;
+    margin-left:205px;
+    margin-top:235px;
+    width:197.5px;
+    height:50px;
+    padding:5px;
+    background:#4285F4;
+    color:white;
+}
+#logoutButton{
+    position:absolute;
+    text-align: center;
+    text-transform: uppercase;
+    font-size:30px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:235px;
+    width:197.5px;
+    height:50px;
+    padding:5px;
+    background:#DB4437;
+    color:white;
+}
+#profileSave:hover, #logoutButton:hover,#addFriendButton:hover{
+    color:black;
+    background: white;
+}
+#profileSave:hover img,#logoutButton:hover img,#addFriendButton:hover img{
+    filter: invert(0%);
+}
+#deleteFriendIcon{
+    height:70%;
+    margin-top:5px;
+    filter: invert(100%);
+    transition: filter 0.2s ease-in-out;
+}
+#messageFriendIcon{
+    height:70%;
+    margin-top:5px;
+    filter: invert(100%);
+    transition: filter 0.2s ease-in-out;
+}
+#addFriendButton{
+    position:absolute;
+    text-align: center;
+    text-transform: uppercase;
+    font-size:30px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:235px;
+    width:400px;
+    height:50px;
+    padding:5px;
+    background:#4285F4;
+    color:white;
+}
+#addFriendIcon{
+    height:70%;
+    margin-top:5px;
+    filter: invert(100%);
+    transition: filter 0.2s ease-in-out;
 }

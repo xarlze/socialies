@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 const deleteIcon = require('../assets/delete.svg')
 const messageIcon = require('../assets/messageicon.svg')
+const plusIcon = require('../assets/plus.svg')
 
-export default class RenderFriend extends Component {
+export default class RenderUser extends Component {
   constructor(props){
     super(props)
     this.state={
@@ -19,7 +20,7 @@ export default class RenderFriend extends Component {
   }
   componentWillMount(){
     const {id} = this.props.match.params
-    const friend = this.props.friends.find(friend=>(
+    const friend = this.props.users.find(friend=>(
         friend.id == id
     ))
     this.setState({
@@ -58,22 +59,12 @@ export default class RenderFriend extends Component {
             >
                 {this.state.profile.gender||"Unspecified"}
             </div>
-            
             <button
-                id="logoutButton"
-                
+                id="addFriendButton"
             >
             <img
-              id="deleteFriendIcon"
-              src={deleteIcon}
-            />
-            </button>
-            <button
-                id="profileSave"
-            >
-            <img
-              id="messageFriendIcon"
-              src={messageIcon}
+              id="addFriendIcon"
+              src={plusIcon}
             />
             </button>
       </div>

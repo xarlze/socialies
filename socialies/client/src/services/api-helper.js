@@ -39,6 +39,21 @@ export const getDetail = id =>{
     .catch(e => e)
 }
 
+export const putUser = (id, data) => {
+  const opts = {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+    }
+  };
+  
+  return fetch(`${baseUrl}/users/${id}`, opts)
+    .then(resp => resp.json())
+    .catch(e => e)
+}
+
 export const getFriends = (id) =>{
   return fetch(`${baseUrl}/friendships/${id}`)
     .then(resp => resp.json())

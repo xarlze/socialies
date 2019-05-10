@@ -10,13 +10,17 @@ import Landing from './components/Landing';
 import Home from './components/Home';
 import Friends from './components/Friends';
 import RenderFriend from './components/RenderFriend';
+import RenderUser from './components/RenderUser';
 import Message from './components/Message';
 import BrowseUsers from './components/BrowseUsers';
 import TenSecondsRule from './components/TenSecondsRule';
 import {
   loginUser,
   registerUser,
-  getDetail
+  getDetail,
+  putUser,
+  getUsers,
+  getFriends
 } from './services/api-helper'
 import {
   friends,
@@ -28,21 +32,35 @@ class App extends Component {
   constructor(props){
     super(props)
     this.state = {
+      friendships:[],
       friends:[],
       messages:[],
       authenticated:false,
       credentials:{},
-      user:{}
+      user:{},
+      users:[]
     }
     this.logout=this.logout.bind(this);
     this.handleRegister=this.handleRegister.bind(this);
     this.handleLogin=this.handleLogin.bind(this);
     this.checkUser=this.checkUser.bind(this);
     this.fetchDetails=this.fetchDetails.bind(this);
+    this.handleProfileChange=this.handleProfileChange.bind(this);
+    this.getFriendships=this.getFriendships.bind(this);
+    this.getAllUsers=this.getAllUsers.bind(this);
+    this.deriveFriends=this.deriveFriends.bind(this);
   }
 
-  componentDidMount(){
-    this.checkUser();
+  async componentDidMount(){
+    await this.getAllUsers();
+    await this.checkUser();
+  }
+
+  async getAllUsers(){
+    const users = await getUsers();
+    this.setState({
+        users
+    })
   }
 
   async fetchDetails(id){
@@ -56,7 +74,7 @@ class App extends Component {
     }
   }
 
-  checkUser(user){
+  checkUser(){
     try{
       const checkUser = localStorage.getItem("jwt");
       if(checkUser){
@@ -66,16 +84,68 @@ class App extends Component {
           credentials: user
         })
         this.fetchDetails(user.user_id)
+        this.getFriendships(user.user_id)
       }
     }catch(e){
       console.error(e)
     }
   }
+
   logout(){
     localStorage.clear();
     this.props.history.push('/');
     window.location.reload();
   }
+
+  async getFriendships(id){
+    try{
+      const {friends} = await getFriends(id);
+      this.setState({
+        friendships:friends
+      })
+      this.deriveFriends();
+    }catch(e){
+      console.error(e)
+    }
+  }
+
+  deriveFriends(){
+    const myid = this.state.credentials.user_id;
+    const friendObjs = this.state.friendships.map(friendship=>{
+      if(friendship.friend_user_id==myid){
+        return {
+          id:friendship.user_id,
+          room_id:friendship.room_id
+        }
+      }else{
+        return{
+          id:friendship.friend_user_id,
+          room_id:friendship.room_id
+        }
+      }
+    })
+    const friends = []
+    this.state.users.forEach(user=>{
+      let isFriend = false;
+      let room_id = null;
+      friendObjs.forEach(friendObj=>{
+        if(friendObj.id==user.id){
+          isFriend = true;
+          room_id = friendObj.room_id;
+        }
+      })
+      if(isFriend){
+        friends.push({
+          ...user,
+          room_id
+        })
+      }
+    })
+    this.setState({
+      friends
+    })
+  }
+
   async handleRegister(data){
     try{
     await registerUser(data);
@@ -87,24 +157,33 @@ class App extends Component {
       console.error(e)
     }
   }
+
   async handleLogin(data){
     try{
       const response = await loginUser(data);
       localStorage.setItem('jwt',response.token)
       this.checkUser()
-      }catch(e){
-        console.error(e)
-      }
+    }catch(e){
+      console.error(e)
+    }
   }
+
   async handleProfileChange(data){
-    console.log("change profile")
+    try{
+      const user = await putUser(this.state.credentials.user_id,data);
+      this.setState({
+        user
+      })
+    }catch(e){
+      console.error(e)
+    }
   }
+
   render(){
     return (
       <div className="App">
-        
         <br/>
-        <button
+        {/* <button
           onClick={()=>{
             this.setState(prevState=>({
               authenticated:!prevState.authenticated
@@ -116,7 +195,7 @@ class App extends Component {
           }}
         >
           Sign
-        </button>  
+        </button>   */}
         {this.state.authenticated&&<Nav
           logout={this.logout}
           user={this.state.user}
@@ -147,7 +226,7 @@ class App extends Component {
             render={ ( props ) => 
               <Friends
                   { ...props }
-                  friends={friends}
+                  friends={this.state.friends}
               />}
             />
             <Route
@@ -155,22 +234,32 @@ class App extends Component {
               render={ ( props ) => 
                 <RenderFriend
                     { ...props }
-                    friends={friends}
+                    friends={this.state.friends}
                 />}
             />
             <Route
-              path='/friends/:friend_id/message'
+              path='/friends/:friend_id/message/:room_id'
               render={ ( props ) => 
                 <Message
                     { ...props }
-                    friends={friends}
+                    friends={this.state.friends}
                 />}
             />
             <Route
-              path='/browse'
+              exact path='/browse'
               render={ ( props ) => 
                 <BrowseUsers
                     { ...props }
+                    users={this.state.users}
+                    myid={this.state.credentials.user_id}
+                />}
+            />
+            <Route
+              path='/browse/:id'
+              render={ ( props ) => 
+                <RenderUser
+                    { ...props }
+                    users={this.state.users}
                 />}
             />
             <Route
