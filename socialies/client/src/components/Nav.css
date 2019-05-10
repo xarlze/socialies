@@ -1,0 +1,49 @@
+nav{
+    display:flex;
+    width:100%;
+    margin-top:0;
+    height: 3%;
+}
+.myPic{
+    width: 60px;
+    border-radius: 50%;
+    height: 60px;
+    object-fit: contain;
+    position:relative;
+    
+}
+.myName{
+    display:inline-block;
+    font-size: 20px;
+    margin: auto 0;
+}
+#friendsLink{
+    background:none;
+    height:1%;
+    display:block;
+    margin:auto;
+    margin-left: 10%;
+    color: white;
+    border:none;
+    font-size:26px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+#profileLink{
+    background:none;
+    height:1%;
+    display:block;
+    margin:auto;
+    margin-right: 10%;
+    color: white;
+    border:none;
+    font-size:26px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+#friendsLink:hover{
+    background-image:radial-gradient(rgba(255,255,255,0.2),rgba(255,255,255,0.15),rgba(255,255,255,0),rgba(255,255,255,0));
+}
+#profileLink:hover{
+    background-image:radial-gradient(rgba(255,255,255,0.2),rgba(255,255,255,0.15),rgba(255,255,255,0),rgba(255,255,255,0));
+}

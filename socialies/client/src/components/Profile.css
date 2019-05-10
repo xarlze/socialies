@@ -1,0 +1,10 @@
+#profileContainer{
+    position:absolute;
+    width:80%;
+    left:10%;
+    top:15%;
+    height:70%;
+}
+#profileContainer>*{
+    border:none;
+}

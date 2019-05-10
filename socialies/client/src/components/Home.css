@@ -1,0 +1,8 @@
+#home{
+    animation: fadein 0.5s ease-in-out;
+}
+@keyframes fadein{
+    0%{
+        opacity: 0;
+    }
+}

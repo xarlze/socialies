@@ -1,0 +1,27 @@
+.mainLogo {
+    position: absolute;
+    width: 100%;
+    max-width: 90%;
+    top: 27%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    height: 44%;
+    z-index: -1;
+  }
+  
+.navLogo {
+    width: 5%;
+    /* max-width: 5%; */
+    height: 3%;
+    margin:auto;
+  }
+#file{
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
