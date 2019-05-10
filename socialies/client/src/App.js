@@ -20,13 +20,18 @@ import {
   getDetail,
   putUser,
   getUsers,
-  getFriends
+  getFriends,
+  postFriendship,
+  deleteFriendship
 } from './services/api-helper'
 import {
   friends,
   messages
 } from './data'
+import Chatkit from '@pusher/chatkit-server';
 
+const instanceLocator = process.env.REACT_APP_CHATKIT_INSTANCE;
+const key = process.env.REACT_APP_CHATKIT_SECRET_KEY
 
 class App extends Component {
   constructor(props){
@@ -37,18 +42,20 @@ class App extends Component {
       messages:[],
       authenticated:false,
       credentials:{},
-      user:{},
       users:[]
     }
     this.logout=this.logout.bind(this);
     this.handleRegister=this.handleRegister.bind(this);
     this.handleLogin=this.handleLogin.bind(this);
     this.checkUser=this.checkUser.bind(this);
-    this.fetchDetails=this.fetchDetails.bind(this);
     this.handleProfileChange=this.handleProfileChange.bind(this);
     this.getFriendships=this.getFriendships.bind(this);
     this.getAllUsers=this.getAllUsers.bind(this);
     this.deriveFriends=this.deriveFriends.bind(this);
+    this.createChatUser=this.createChatUser.bind(this);
+    this.addFriendship=this.addFriendship.bind(this);
+    this.createRoom=this.createRoom.bind(this);
+    this.removeFriendship=this.removeFriendship.bind(this);
   }
 
   async componentDidMount(){
@@ -56,6 +63,42 @@ class App extends Component {
     await this.checkUser();
   }
 
+  async createChatUser(id,name){
+    const chatkit = new Chatkit({
+      instanceLocator,
+      key
+    })
+    chatkit.createUser({
+      id:`${id}`,
+      name,
+    })
+      .then(resp => {
+        console.log(resp);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async createRoom(myid,friendid){
+    try{
+      const chatkit = new Chatkit({
+        instanceLocator,
+        key
+      })
+      return await chatkit.createRoom({
+        creatorId: `${myid}`,
+        name: `Room With ${myid} and ${friendid}`,
+        userIds: [`${friendid}`],
+        isPrivate: true
+      })
+        .then(resp => {
+          console.log(resp);
+          return resp.id;
+        })
+    }catch(e){
+      console.error(e);
+    }
+  }
   async getAllUsers(){
     const users = await getUsers();
     this.setState({
@@ -63,18 +106,7 @@ class App extends Component {
     })
   }
 
-  async fetchDetails(id){
-    try{
-      const user = await getDetail(id);
-      this.setState({
-        user
-      })
-    }catch(e){
-      console.error(e)
-    }
-  }
-
-  checkUser(){
+  async checkUser(){
     try{
       const checkUser = localStorage.getItem("jwt");
       if(checkUser){
@@ -83,8 +115,8 @@ class App extends Component {
           authenticated:true,
           credentials: user
         })
-        this.fetchDetails(user.user_id)
-        this.getFriendships(user.user_id)
+        const friends = await this.getFriendships(user.user_id)
+        return { user, friends }
       }
     }catch(e){
       console.error(e)
@@ -103,10 +135,42 @@ class App extends Component {
       this.setState({
         friendships:friends
       })
+      return this.deriveFriends();
+    }catch(e){
+      console.error(e)
+    }
+  }
+
+  async addFriendship(id){
+    try{
+      const room_id = await this.createRoom(this.state.credentials.user_id,id)
+      console.log("added room "+room_id);
+      const friendship = await postFriendship({
+        user_id:this.state.credentials.user_id,
+        friend_user_id:id,
+        room_id
+      })
+      this.setState(prevState=>({
+        friendships:[...prevState.friendships, friendship]
+      }))
       this.deriveFriends();
     }catch(e){
       console.error(e)
     }
+  }
+
+  async removeFriendship(roomid){
+    await deleteFriendship(roomid);
+    const newFriends = this.state.friends.filter(friend=>{
+      if(friend.room_id==roomid){
+        return false
+      }
+      return true
+    })
+    this.setState({
+      friends:newFriends
+    })
+    await this.getFriendships(this.state.credentials.user_id);
   }
 
   deriveFriends(){
@@ -144,6 +208,7 @@ class App extends Component {
     this.setState({
       friends
     })
+    return friends;
   }
 
   async handleRegister(data){
@@ -152,6 +217,7 @@ class App extends Component {
     this.handleLogin(data)
       .then(()=>{
         this.props.history.push('/profile')
+        this.createChatUser(this.state.credentials.user_id, `User ${this.state.credentials.user_id}`);
       })
     }catch(e){
       console.error(e)
@@ -172,7 +238,7 @@ class App extends Component {
     try{
       const user = await putUser(this.state.credentials.user_id,data);
       this.setState({
-        user
+        credentials:user
       })
     }catch(e){
       console.error(e)
@@ -198,7 +264,7 @@ class App extends Component {
         </button>   */}
         {this.state.authenticated&&<Nav
           logout={this.logout}
-          user={this.state.user}
+          user={this.state.credentials}
         />}
         <Switch>
         {this.state.authenticated&&(
@@ -216,7 +282,7 @@ class App extends Component {
               render={ ( props ) => 
                 <Profile
                     { ...props }
-                    user={this.state.user}
+                    user={this.state.credentials}
                     logout={this.logout}
                     handleProfileChange={this.handleProfileChange}
                 />}
@@ -235,6 +301,7 @@ class App extends Component {
                 <RenderFriend
                     { ...props }
                     friends={this.state.friends}
+                    removeFriendship={this.removeFriendship}
                 />}
             />
             <Route
@@ -243,6 +310,8 @@ class App extends Component {
                 <Message
                     { ...props }
                     friends={this.state.friends}
+                    user={this.state.credentials}
+                    checkUser={this.checkUser}
                 />}
             />
             <Route
@@ -252,6 +321,7 @@ class App extends Component {
                     { ...props }
                     users={this.state.users}
                     myid={this.state.credentials.user_id}
+                    addFriendship={this.addFriendship}
                 />}
             />
             <Route
@@ -260,6 +330,7 @@ class App extends Component {
                 <RenderUser
                     { ...props }
                     users={this.state.users}
+                    addFriendship={this.addFriendship}
                 />}
             />
             <Route

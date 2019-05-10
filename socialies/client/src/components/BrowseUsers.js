@@ -37,7 +37,8 @@ class BrowseUsers extends Component {
                       src={plusIcon}
                       onClick={e=>{
                           e.stopPropagation();
-                          
+                          this.props.addFriendship(friend.id)
+                          this.props.history.push('/');
                       }}
                   />
               </div>

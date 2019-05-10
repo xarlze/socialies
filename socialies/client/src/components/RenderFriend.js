@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
+import { withRouter } from 'react-router';
 const deleteIcon = require('../assets/delete.svg')
 const messageIcon = require('../assets/messageicon.svg')
 
-export default class RenderFriend extends Component {
+class RenderFriend extends Component {
   constructor(props){
     super(props)
     this.state={
@@ -61,7 +62,11 @@ export default class RenderFriend extends Component {
             
             <button
                 id="logoutButton"
-                
+                onClick={async (e)=>{
+                  e.preventDefault()
+                  this.props.removeFriendship(this.state.profile.room_id)
+                  this.props.history.push('/');
+                }}
             >
             <img
               id="deleteFriendIcon"
@@ -70,6 +75,10 @@ export default class RenderFriend extends Component {
             </button>
             <button
                 id="profileSave"
+                onClick={e=>{
+                  e.stopPropagation();
+                  this.props.history.push(`/friends/${this.state.profile.id}/message/${this.state.profile.room_id}`)
+              }}
             >
             <img
               id="messageFriendIcon"
@@ -80,3 +89,4 @@ export default class RenderFriend extends Component {
     )
   }
 }
+export default withRouter(RenderFriend);
