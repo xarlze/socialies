@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css?family=Cutive+Mono');
+
+@font-face {
+  font-family: 'NTFGrandItalic';
+  src: url('./fonts/grand-italic/NTFGrandItalic.eot');
+  src: url('./fonts/grand-italic/NTFGrandItalic.eot') format('embedded-opentype'),
+       url('./fonts/grand-italic/NTFGrandItalic.woff2') format('woff2'),
+       url('./fonts/grand-italic/NTFGrandItalic.woff') format('woff'),
+       url('./fonts/grand-italic/NTFGrandItalic.ttf') format('truetype'),
+       url('./fonts/grand-italic/NTFGrandItalic.svg#NTFGrandItalic') format('svg');
+}
+
+@font-face {
+  font-family: 'NTFGrandRegular';
+  src: url('./fonts/grand/NTFGrandRegular.eot');
+  src: url('./fonts/grand/NTFGrandRegular.eot') format('embedded-opentype'),
+       url('./fonts/grand/NTFGrandRegular.woff2') format('woff2'),
+       url('./fonts/grand/NTFGrandRegular.woff') format('woff'),
+       url('./fonts/grand/NTFGrandRegular.ttf') format('truetype'),
+       url('./fonts/grand/NTFGrandRegular.svg#NTFGrandRegular') format('svg');
+}
+
+* {
+  font-family: 'NTFGrandRegular';
+  font-weight: 100;
+}
+html{
+  overflow: hidden;
+}
+body {
+  background: black;
+  color: white;
+}
+
+#landingPage {
+  z-index: -1;
+  margin: 0 auto;
+  position: absolute;
+  max-width: 90%;
+  top: 20%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  text-align: center;
+}
+#landingLinksReflections {
+  background: none;
+  position: absolute;
+  height: 100px;
+  opacity:0.3;
+  bottom: 1.5%;
+  margin-left: 0.22%;
+  color: #F4B400;
+  text-transform: uppercase;
+  font-weight: thin;
+  font-size: 32px;
+  border: none;
+  
+}
+#landingLinksReflections>*{
+  display:inline-block;
+  cursor: pointer;
+  height:100px;
+  opacity:0;
+  transition:opacity 0.5s ease-in-out;
+  animation: revealReflection 1s ease-in-out infinite;
+  transform: rotateX(180deg);
+}
+#landingLinksReflections>*:hover{
+    opacity:0.5;
+}
+
+#landingLinks {
+  background: none;
+  position: absolute;
+  bottom: 7%;
+  margin-top: 0%;
+  margin-left: 0.22%;
+  color: #F4B400;
+  text-transform: uppercase;
+  font-weight: thin;
+  font-size: 32px;
+  border: none;
+}
+
+#registerLink{
+  margin-left:38px;
+  font-family: 'NTFGrandItalic';
+  transition: opacity 0.5s ease-in-out;
+}
+#loginLink{
+  font-family: 'NTFGrandItalic';
+  transition: opacity 0.5s ease-in-out;
+}

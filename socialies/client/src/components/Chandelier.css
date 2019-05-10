@@ -1,0 +1,29 @@
+#fullScreen{
+    position: absolute;
+    width:100%;
+    height:100%;
+    pointer-events: none;
+    display:none;
+  }
+#circularText{
+    position: absolute;
+    width:100%;
+    top: 1%;
+    left: 0%;
+    /* border: 2px solid white; */
+    text-transform: uppercase;
+    font-size: 28px;
+    /* white-space:pre; */
+    pointer-events: none;
+    animation: spin 60s linear infinite;
+    opacity:0.4;
+    z-index:-1;
+}
+#circularText>*{
+    height:28.486em !important;
+}
+  @keyframes spin{
+    100%{
+      transform: rotate(360deg)
+    }
+  }
