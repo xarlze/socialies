@@ -51,25 +51,68 @@ export const friends = [
     }
 ]
 
-export const messages = [
-    {
-        id: 1,
-        content: "Hi John sadsaodji"
-    },
-    {
-        id: 2,
-        content: "Hi Josadasd mfoefmpwe ewfowep dji"
-    },
-    {
-        id: 3,
-        content: "Hi asdamsas ofqpef oefmpwe ewfowep dji"
-    },
-    {
-        id: 4,
-        content: "Hi asdsafkok asofpksafk fskao pka dji"
-    },
-    {
-        id: 5,
-        content: "Hi asdsafkokasdmas dsaoid aafk fskao pka dji"
-    }
-]
+export const messages = [{
+    parts:[{payload:{content:"hi"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"bye"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"good"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"hi"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"bye"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"good"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"hi"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"bye"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"good"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"hi"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"bye"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
+    senderId:1,
+    createdAt: "2019-05-09T04:36:43Z"
+  },{
+    parts:[{payload:{content:"good"}}],
+    senderId:5,
+    createdAt: "2019-05-09T04:36:43Z"
+  }]

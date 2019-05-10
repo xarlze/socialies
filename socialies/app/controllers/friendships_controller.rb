@@ -32,8 +32,10 @@ class FriendshipsController < ApplicationController
 
   # DELETE /friendships/1
   def destroy
-    @friendship = Friendship.find_by(user_id:param[:friendship][:user_id], friend_user_id:param[:friendship][:friend_user_id])
-    @friendship.destroy
+    @friendship = Friendship.find_by_room_id(params[:id])
+    @user1 = User.find(@friendship.user_id)
+    @user2 = User.find(@friendship.friend_user_id)
+    @user1.friendships.delete(@user2)
   end
 
   private

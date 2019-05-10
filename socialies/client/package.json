@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@pusher/chatkit-client": "^1.5.0",
+    "@pusher/chatkit-server": "^1.1.0",
     "circletype": "^2.3.0",
     "jwt-decode": "^2.2.0",
     "react": "^16.8.6",

@@ -5,9 +5,26 @@ const messageIcon = require('../assets/messageicon.svg')
 const placeholderPic = "https://imgur.com/ugaHSYk.png";
 
 class Friends extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      friends:[]
+    }
+  }
+  componentWillMount(){
+    this.setState({
+      friends:this.props.friends
+    })
+  }
+  static getDerivedStateFromProps(nextProps, prevState){
+    if(nextProps.friends!=prevState.friends){
+      return{
+        friends:nextProps.friends
+      }
+    }
+  }
   render() {
-    console.log(this.props.friends)
-    const friendsDisplay = this.props.friends.map(friend=>(
+    const friendsDisplay = this.state.friends.map(friend=>(
         <div
             className="friend"
             onClick={()=>{

@@ -1,105 +1,97 @@
 import React, { Component } from 'react'
+import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
 import './Message.css'
 const placeholderPic = "https://imgur.com/ugaHSYk.png";
+const instanceLocator = process.env.REACT_APP_CHATKIT_INSTANCE;
+const url = process.env.REACT_APP_CHATKIT_TOKEN_URL;
 // message.parts[0].payload.content
-
-const messages = [{
-  parts:[{payload:{content:"hi"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"bye"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"good"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"hi"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"bye"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"good"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"hi"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"bye"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"good"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"hi"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"bye"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"how are you i am doing great what about you i am fine"}}],
-  senderId:1,
-  createdAt: "2019-05-09T04:36:43Z"
-},{
-  parts:[{payload:{content:"good"}}],
-  senderId:5,
-  createdAt: "2019-05-09T04:36:43Z"
-}]
-const me = {
-  id: 1,
-  name: "John Cena",
-  picture_url:"https://randomuser.me/api/portraits/men/22.jpg"
-}
 
 export default class Message extends Component {
   constructor(props){
     super(props)
     this.state={
+      currentUser:null,
       messages:[],
+      friend:{
+        email:"",
+        first_name:"",
+        last_name:"",
+        gender:"",
+        description:"",
+        picture_url:"",
+        location:""
+      },
       input:""
     }
     this.conversation = React.createRef();
     this.handleChange=this.handleChange.bind(this);
     this.scroll=this.scroll.bind(this);
     this.sendMessage=this.sendMessage.bind(this);
+    this.connect=this.connect.bind(this);
+  }
+  connect(){
+    const chatManager = new ChatManager({
+      instanceLocator,
+      userId: `${this.props.user.id}`,
+      tokenProvider: new TokenProvider({ url })
+    })
+    chatManager.connect()
+    .then(currentUser => {
+      this.setState({
+        currentUser
+      })
+      currentUser.subscribeToRoomMultipart({
+        roomId: `${this.props.match.params.room_id}`,
+        hooks: {
+          onMessage: message => {
+            this.setState(prev=>{
+              return{
+                messages:[
+                  ...prev.messages,
+                  message
+                ]
+              }
+            })
+          }
+        },
+        messageLimit: 30
+      }) 
+    })
   }
   componentWillMount(){
     this.setState({
-      messages
+      messages:[{
+        parts:[{payload:{content:"Start Chatting!"}}],
+        senderId:`${this.props.user.id}`,
+        createdAt: "0000-01-01T00:00:00Z"
+      }]
     })
   }
   componentDidMount(){
-    this.scroll()
+    const {friend_id} = this.props.match.params
+    // const { user, friends} = this.props.checkUser();
+
+    const friend = this.props.friends.find(friend=>(
+        friend.id == friend_id
+    ))
+    this.setState({
+      friend
+    })
+    this.scroll();
+    this.connect();
   }
   
   scroll(){
     this.conversation.current.scrollTop = this.conversation.current.scrollHeight
   }
   sendMessage(){
-    console.log(`sending ${this.state.input}`)
+    this.state.currentUser.sendSimpleMessage({
+      roomId: `${this.props.match.params.room_id}`,
+      text: `${this.state.input}`,
+    })
+    .catch(err => {
+      console.error(err);
+    })
     this.setState({
       input:""
     })
@@ -118,14 +110,10 @@ export default class Message extends Component {
   }
 
   render() {
-    const {friend_id} = this.props.match.params
-    console.log(this.props.match.params)
-    const friend = this.props.friends.find(friend=>(
-        friend.id == friend_id
-    ))
-    const my_id = me.id;
-    const my_picture = me.picture_url;
-    const my_name = me.name;
+    const {friend} = this.state;
+    const my_id = this.props.user.id;
+    const my_picture = this.props.user.picture_url;
+    const my_name = this.props.user.first_name||"Me";
     const messagesDisplay = this.state.messages.map(message=>(
       <div
         className="conversationLog"
@@ -161,7 +149,7 @@ export default class Message extends Component {
             />
             <h3
               className="chatName"
-            >{friend.name}</h3>
+            >{friend.first_name||"Friend"}</h3>
             
           </div>
           <p

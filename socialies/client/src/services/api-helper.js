@@ -48,7 +48,7 @@ export const putUser = (id, data) => {
       'Authorization': `Bearer ${localStorage.getItem('jwt')}`
     }
   };
-  
+
   return fetch(`${baseUrl}/users/${id}`, opts)
     .then(resp => resp.json())
     .catch(e => e)
@@ -71,6 +71,18 @@ export const postFriendship = (data) =>{
 
   return fetch(`${baseUrl}/friendships`, opts)
     .then(resp => resp.json())
+    .catch(e => e)
+}
+
+export const deleteFriendship = (roomid) =>{
+  const opts = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  fetch(`${baseUrl}/friendships/${roomid}`, opts)
+    .then(() => true)
     .catch(e => e)
 }
 

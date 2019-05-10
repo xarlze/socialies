@@ -13,6 +13,7 @@ class Nav extends Component {
           <button
               onClick={()=>{
                 this.props.history.push('/friends')
+                window.location.reload();
               }}
               id="friendsLink"
             >Friends</button>
@@ -25,7 +26,7 @@ class Nav extends Component {
               }}
               id="profileLink"
             >
-          {this.props.user.first_name.concat(' ',this.props.user.last_name)||"Me"}
+          {(this.props.user.first_name&&this.props.user.last_name&&this.props.user.first_name.concat(' ',this.props.user.last_name))||"Me"}
             </button>
             
         </nav>

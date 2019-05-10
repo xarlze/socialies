@@ -61,11 +61,16 @@ export default class RenderUser extends Component {
             </div>
             <button
                 id="addFriendButton"
+                onClick={e=>{
+                    e.preventDefault();
+                    this.props.addFriendship(this.props.match.params.id)
+                    this.props.history.push('/');
+                }}
             >
-            <img
-              id="addFriendIcon"
-              src={plusIcon}
-            />
+                <img
+                id="addFriendIcon"
+                src={plusIcon}
+                />
             </button>
       </div>
     )
