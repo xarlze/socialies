@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import './style.css';
-import Loading from './components/Loading';
+import Redirect from './components/Redirect';
 import Profile from './components/Profile';
 import decode from 'jwt-decode';
 import Nav from './components/Nav';
@@ -13,7 +13,9 @@ import RenderFriend from './components/RenderFriend';
 import RenderUser from './components/RenderUser';
 import Message from './components/Message';
 import BrowseUsers from './components/BrowseUsers';
-import TenSecondsRule from './components/TenSecondsRule';
+import Game from './components/Game';
+import Footer from './components/Footer';
+import PhoneScreen from './components/PhoneScreen';
 import {
   loginUser,
   registerUser,
@@ -42,7 +44,8 @@ class App extends Component {
       messages:[],
       authenticated:false,
       credentials:{},
-      users:[]
+      users:[],
+      loading:true
     }
     this.logout=this.logout.bind(this);
     this.handleRegister=this.handleRegister.bind(this);
@@ -62,6 +65,80 @@ class App extends Component {
     await this.getAllUsers();
     await this.checkUser();
   }
+
+  async getAllUsers(){
+    const users = await getUsers();
+    this.setState({
+        users
+    })
+  }
+
+  async checkUser(){
+    try{
+      const checkUser = localStorage.getItem("jwt");
+      if(checkUser){
+        const user = decode(checkUser);
+        this.setState({
+          authenticated:true,
+          credentials: user
+        })
+        const friends = await this.getFriendships(user.user_id)
+        return { user, friends }
+      }
+    }catch(e){
+      console.error(e)
+    }
+  }
+
+  async getFriendships(id){
+    try{
+      const {friends} = await getFriends(id);
+      return this.deriveFriends(id,friends);
+    }catch(e){
+      console.error(e)
+    }
+  }
+
+  deriveFriends(myid,friendships){
+    const friendObjs = friendships.map(friendship=>{
+      if(friendship.friend_user_id==myid){
+        return {
+          id:friendship.user_id,
+          room_id:friendship.room_id
+        }
+      }else{
+        return{
+          id:friendship.friend_user_id,
+          room_id:friendship.room_id
+        }
+      }
+    })
+    const friends = []
+    this.state.users.forEach(user=>{
+      let isFriend = false;
+      let room_id = null;
+      friendObjs.forEach(friendObj=>{
+        if(friendObj.id==user.id){
+          isFriend = true;
+          room_id = friendObj.room_id;
+        }
+      })
+      if(isFriend){
+        friends.push({
+          ...user,
+          room_id
+        })
+      }
+    })
+    this.setState({
+      friends,
+      friendships,
+      loading:false
+    })
+    return friends;
+  }
+
+  
 
   async createChatUser(id,name){
     const chatkit = new Chatkit({
@@ -99,29 +176,8 @@ class App extends Component {
       console.error(e);
     }
   }
-  async getAllUsers(){
-    const users = await getUsers();
-    this.setState({
-        users
-    })
-  }
-
-  async checkUser(){
-    try{
-      const checkUser = localStorage.getItem("jwt");
-      if(checkUser){
-        const user = decode(checkUser);
-        this.setState({
-          authenticated:true,
-          credentials: user
-        })
-        const friends = await this.getFriendships(user.user_id)
-        return { user, friends }
-      }
-    }catch(e){
-      console.error(e)
-    }
-  }
+  
+  
 
   logout(){
     localStorage.clear();
@@ -129,17 +185,7 @@ class App extends Component {
     window.location.reload();
   }
 
-  async getFriendships(id){
-    try{
-      const {friends} = await getFriends(id);
-      this.setState({
-        friendships:friends
-      })
-      return this.deriveFriends();
-    }catch(e){
-      console.error(e)
-    }
-  }
+  
 
   async addFriendship(id){
     try{
@@ -150,10 +196,8 @@ class App extends Component {
         friend_user_id:id,
         room_id
       })
-      this.setState(prevState=>({
-        friendships:[...prevState.friendships, friendship]
-      }))
-      this.deriveFriends();
+      const friendships = [...this.state.friendships, friendship]
+      this.deriveFriends(this.state.credentials.user_id, friendships);
     }catch(e){
       console.error(e)
     }
@@ -161,55 +205,13 @@ class App extends Component {
 
   async removeFriendship(roomid){
     await deleteFriendship(roomid);
-    const newFriends = this.state.friends.filter(friend=>{
-      if(friend.room_id==roomid){
-        return false
-      }
-      return true
+    const newFriendships = this.state.friendships.filter(friendship=>{
+      return friendship.room_id!==roomid
     })
-    this.setState({
-      friends:newFriends
-    })
-    await this.getFriendships(this.state.credentials.user_id);
+    this.deriveFriends(this.state.credentials.user_id, newFriendships);
   }
 
-  deriveFriends(){
-    const myid = this.state.credentials.user_id;
-    const friendObjs = this.state.friendships.map(friendship=>{
-      if(friendship.friend_user_id==myid){
-        return {
-          id:friendship.user_id,
-          room_id:friendship.room_id
-        }
-      }else{
-        return{
-          id:friendship.friend_user_id,
-          room_id:friendship.room_id
-        }
-      }
-    })
-    const friends = []
-    this.state.users.forEach(user=>{
-      let isFriend = false;
-      let room_id = null;
-      friendObjs.forEach(friendObj=>{
-        if(friendObj.id==user.id){
-          isFriend = true;
-          room_id = friendObj.room_id;
-        }
-      })
-      if(isFriend){
-        friends.push({
-          ...user,
-          room_id
-        })
-      }
-    })
-    this.setState({
-      friends
-    })
-    return friends;
-  }
+  
 
   async handleRegister(data){
     try{
@@ -227,19 +229,27 @@ class App extends Component {
   async handleLogin(data){
     try{
       const response = await loginUser(data);
+      if(response.error){
+        return false;
+      }
       localStorage.setItem('jwt',response.token)
       this.checkUser()
     }catch(e){
       console.error(e)
+      return false;
     }
   }
 
-  async handleProfileChange(data){
+  async handleProfileChange(data,password){
     try{
-      const user = await putUser(this.state.credentials.user_id,data);
-      this.setState({
-        credentials:user
-      })
+      const user = await putUser(this.state.credentials.user_id,data)
+        .then(profile=>{
+          this.handleLogin({
+            email:profile.email,
+            password:password
+          })
+          return profile;
+        })
     }catch(e){
       console.error(e)
     }
@@ -249,19 +259,6 @@ class App extends Component {
     return (
       <div className="App">
         <br/>
-        {/* <button
-          onClick={()=>{
-            this.setState(prevState=>({
-              authenticated:!prevState.authenticated
-            }))
-          }}
-          style={{
-            position:"fixed",
-            bottom: "1%"
-          }}
-        >
-          Sign
-        </button>   */}
         {this.state.authenticated&&<Nav
           logout={this.logout}
           user={this.state.credentials}
@@ -322,6 +319,8 @@ class App extends Component {
                     users={this.state.users}
                     myid={this.state.credentials.user_id}
                     addFriendship={this.addFriendship}
+                    friends={this.state.friends}
+                    loading={this.state.loading}
                 />}
             />
             <Route
@@ -334,9 +333,9 @@ class App extends Component {
                 />}
             />
             <Route
-              path='/ten-seconds-rule'
+              exact path='/game'
               render={ ( props ) => 
-                <TenSecondsRule
+                <Game
                     { ...props }
                     friends={friends}
                 />}
@@ -351,7 +350,15 @@ class App extends Component {
                   handleLogin={this.handleLogin}
               />}
           />
+          <Route
+            render={ ( props ) => 
+              <Redirect
+                  { ...props }
+              />}
+          />
         </Switch>
+        <Footer/>
+        <PhoneScreen/>
       </div>
     );
   }

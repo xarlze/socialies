@@ -2,10 +2,11 @@
     position:absolute;
     left:50%;
     margin-left:-350px;
-    top:20%;
+    top:25%;
     overflow:scroll;
+    scroll-behavior: smooth;
     width:700px;
-    height:60%;
+    height:56%;
 }
 .conversationLog{
     width:100%;
@@ -30,14 +31,16 @@
     position:absolute;
     top:82%;
     height:35px;
-    width:65px;
+    width:75px;
     left:50%;
-    margin-left:280px;
+    margin-left:270px;
+    padding:0 !important;
     border:none;
     font-size:26px;
     background:#405DE6;
     text-transform: uppercase;
     color:white;
+    text-align: center;
 }
 .conversationLog>*{
     display:flex;

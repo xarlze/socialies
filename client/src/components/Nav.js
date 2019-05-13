@@ -13,7 +13,6 @@ class Nav extends Component {
           <button
               onClick={()=>{
                 this.props.history.push('/friends')
-                window.location.reload();
               }}
               id="friendsLink"
             >Friends</button>

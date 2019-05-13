@@ -2,7 +2,7 @@
     position:absolute;
     width:80%;
     left:10%;
-    top:15%;
+    top:20%;
     height:70%;
     animation: fadein 0.5s ease-in-out;
 }
@@ -169,4 +169,35 @@
     margin-top:5px;
     filter: invert(100%);
     transition: filter 0.2s ease-in-out;
+}
+
+.confirmChange{
+    margin-top:-1px !important;
+    margin-left:-401px !important;
+}
+#confirmMessage{
+    position:absolute;
+    text-align: left;
+    font-size:28px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:70px;
+    width:390px;
+    height:40px;
+    padding:0px;
+    text-transform: uppercase;
+}
+#profileConfirmation{
+    position:absolute;
+    text-align: left;
+    font-size:28px;
+    top:23%;
+    left:50%;
+    margin-left:0px;
+    margin-top:130px;
+    width:390px;
+    height:40px;
+    padding:5px;
+    background: rgba(255,255,255,0.8);
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router';
+import Loading from './Loading';
 
 const plusIcon = require('../assets/plus.png')
 const placeholderPic = "https://imgur.com/ugaHSYk.png";
@@ -8,18 +9,42 @@ class BrowseUsers extends Component {
     constructor(props){
         super(props)
         this.state={
-            users:[]
+            users:[],
+            friends:[]
         }
+        this.notAlreadyFriend=this.notAlreadyFriend.bind(this);
     }
-    componentWillMount(){
-        const {users} = this.props
+    componentDidMount(){
+        const {users,friends} = this.props
         this.setState({
-          users
+          users,
+          friends
         })
     }
+    static getDerivedStateFromProps(nextProps, prevState){
+      if(nextProps.friends!=prevState.friends){
+        return{
+          friends:nextProps.friends
+        }
+      }else{
+        return(null);
+      }
+    }
+    notAlreadyFriend(userid){
+      let notFriend = true;
+      this.state.friends.forEach(friend=>{
+        if(friend.id==userid){
+          notFriend = false;
+        }
+      })
+      return notFriend;
+    }
     render() {
+      if(this.props.loading){
+        return(<Loading/>)
+      }else{
         const friendsDisplay = this.state.users.map(friend=>{
-          if(friend.id!=this.props.myid){
+          if((friend.id!=this.props.myid)&&this.notAlreadyFriend(friend.id)){
             return(
               <div
                   className="friend"
@@ -38,7 +63,7 @@ class BrowseUsers extends Component {
                       onClick={e=>{
                           e.stopPropagation();
                           this.props.addFriendship(friend.id)
-                          this.props.history.push('/');
+                          this.props.history.push('/friends');
                       }}
                   />
               </div>
@@ -65,5 +90,6 @@ class BrowseUsers extends Component {
           </div>
         )
       }
+    }
 }
 export default withRouter(BrowseUsers);

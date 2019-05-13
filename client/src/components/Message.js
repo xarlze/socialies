@@ -1,26 +1,23 @@
 import React, { Component } from 'react'
 import { ChatManager, TokenProvider } from '@pusher/chatkit-client'
+import Title from './Title';
 import './Message.css'
+import Loading from './Loading';
 const placeholderPic = "https://imgur.com/ugaHSYk.png";
 const instanceLocator = process.env.REACT_APP_CHATKIT_INSTANCE;
 const url = process.env.REACT_APP_CHATKIT_TOKEN_URL;
-// message.parts[0].payload.content
 
 export default class Message extends Component {
   constructor(props){
     super(props)
     this.state={
       currentUser:null,
-      messages:[],
-      friend:{
-        email:"",
-        first_name:"",
-        last_name:"",
-        gender:"",
-        description:"",
-        picture_url:"",
-        location:""
-      },
+      messages:[{
+        parts:[{payload:{content:"Start chatting!"}}],
+        senderId:`${this.props.user.id}`,
+        createdAt: "2000-06-29T12:00:00Z"
+      }],
+      loading:true,
       input:""
     }
     this.conversation = React.createRef();
@@ -38,7 +35,8 @@ export default class Message extends Component {
     chatManager.connect()
     .then(currentUser => {
       this.setState({
-        currentUser
+        currentUser,
+        loading:false
       })
       currentUser.subscribeToRoomMultipart({
         roomId: `${this.props.match.params.room_id}`,
@@ -52,32 +50,15 @@ export default class Message extends Component {
                 ]
               }
             })
+            this.scroll();
           }
         },
         messageLimit: 30
       }) 
     })
   }
-  componentWillMount(){
-    this.setState({
-      messages:[{
-        parts:[{payload:{content:"Start Chatting!"}}],
-        senderId:`${this.props.user.id}`,
-        createdAt: "0000-01-01T00:00:00Z"
-      }]
-    })
-  }
   componentDidMount(){
-    const {friend_id} = this.props.match.params
-    // const { user, friends} = this.props.checkUser();
-
-    const friend = this.props.friends.find(friend=>(
-        friend.id == friend_id
-    ))
-    this.setState({
-      friend
-    })
-    this.scroll();
+    debugger;
     this.connect();
   }
   
@@ -99,7 +80,7 @@ export default class Message extends Component {
 
   readableTime(time){
     let date = new Date(time);
-    return (<div className="time">{`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}<br/>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}`}</div>)
+    return (<div className="time">{`${date.getHours()>=10?date.getHours():'0'+date.getHours()}:${date.getMinutes()>=10?date.getMinutes():'0'+date.getMinutes()}:${date.getSeconds()>=10?date.getSeconds():'0'+date.getSeconds()}`}<br/>{`${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}`}</div>)
   }
 
   handleChange(e) {
@@ -108,80 +89,96 @@ export default class Message extends Component {
       [name]: value
     });
   }
-
+  
   render() {
-    const {friend} = this.state;
-    const my_id = this.props.user.id;
-    const my_picture = this.props.user.picture_url;
-    const my_name = this.props.user.first_name||"Me";
-    const messagesDisplay = this.state.messages.map(message=>(
-      <div
-        className="conversationLog"
-      >
-        {message.senderId==my_id?(
-          <React.Fragment>
-          <div
-            className="holdsSpace"
-          ></div>
-          <p
-            className="myMessage"
-          >{message.parts[0].payload.content}</p>
-          <div
-            className="messageProfile"
-          >
-            <img
-              className="chatIcon"
-              src={my_picture||placeholderPic}
-            />
-            <h3
-              className="chatName"
-            >{my_name}</h3>
-            
-          </div>
-          </React.Fragment>):(
-          <React.Fragment>
-          <div
-            className="messageProfile"
-          >
-            <img
-              className="chatIcon"
-              src={friend.picture_url||placeholderPic}
-            />
-            <h3
-              className="chatName"
-            >{friend.first_name||"Friend"}</h3>
-            
-          </div>
-          <p
-          className="friendMessage">
-          {message.parts[0].payload.content}</p>
-          <div
-            className="holdsSpace"
-          ></div>
-          </React.Fragment>)}
-          {this.readableTime(message.createdAt)}
-        </div>)
-    );
-    return (
-      <React.Fragment>
+    if(this.state.loading||!this.props.friends.length){
+      return(<Loading />)
+    }else{
+      const {friend_id} = this.props.match.params
+      const friend = this.props.friends.find(friend=>(
+          friend.id == friend_id
+      ))
+      const my_id = this.props.user.id;
+      const my_picture = this.props.user.picture_url;
+      const my_name = this.props.user.first_name||"Me";
+      const messagesDisplay = this.state.messages.map(message=>(
         <div
-          id="conversationContainer"
-          ref={this.conversation}
+          className="conversationLog"
         >
-          {messagesDisplay}
-        </div>
-        <input
-          id="messageInput"
-          value={this.state.input}
-          name="input"
-          onChange={this.handleChange}
-          onClick={this.scroll}
-        />
-        <button
-          id="sendMessage"
-          onClick={this.sendMessage}
-        >Send</button>
-      </React.Fragment>  
-    )
+          {message.senderId==my_id?(
+            <React.Fragment>
+            <div
+              className="holdsSpace"
+            ></div>
+            <p
+              className="myMessage"
+            >{message.parts[0].payload.content}</p>
+            <div
+              className="messageProfile"
+            >
+              <img
+                className="chatIcon"
+                src={my_picture||placeholderPic}
+              />
+              <h3
+                className="chatName"
+              >{my_name}</h3>
+              
+            </div>
+            </React.Fragment>):(
+            <React.Fragment>
+            <div
+              className="messageProfile"
+            >
+              <img
+                className="chatIcon"
+                src={friend.picture_url||placeholderPic}
+              />
+              <h3
+                className="chatName"
+              >{friend.first_name||"Friend"}</h3>
+              
+            </div>
+            <p
+            className="friendMessage">
+            {message.parts[0].payload.content}</p>
+            <div
+              className="holdsSpace"
+            ></div>
+            </React.Fragment>)}
+            {this.readableTime(message.createdAt)}
+          </div>)
+      );
+      return (
+        <React.Fragment>
+          <h1
+            id="messageTitle"
+          >{friend.first_name}</h1>
+          <div
+            id="conversationContainer"
+            ref={this.conversation}
+          >
+            {messagesDisplay}
+          </div>
+          <form
+            onSubmit={e=>{
+              e.preventDefault();
+              this.sendMessage();
+            }}
+          >
+            <input
+              id="messageInput"
+              value={this.state.input}
+              name="input"
+              onChange={this.handleChange}
+              onClick={this.scroll}
+            />
+            <button
+              id="sendMessage"
+            >Send</button>
+          </form>
+        </React.Fragment>  
+      )
+    }
   }
 }

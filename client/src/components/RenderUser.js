@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import Title from './Title';
+import BackButton from './BackButton';
 const deleteIcon = require('../assets/delete.svg')
 const messageIcon = require('../assets/messageicon.svg')
 const plusIcon = require('../assets/plus.svg')
@@ -20,15 +22,22 @@ export default class RenderUser extends Component {
   }
   componentWillMount(){
     const {id} = this.props.match.params
-    const friend = this.props.users.find(friend=>(
-        friend.id == id
+    const profile = this.props.users.find(user=>(
+        user.id == id
     ))
     this.setState({
-      profile:friend
+      profile
     })
   }
   render() {
+
+    const {id} = this.props.match.params
+    const profile = this.props.users.find(user=>(
+        user.id == id
+    ))
     return (
+      <React.Fragment>
+      <Title title="User Profile"/>
       <div
         id="profileContainer"
       >
@@ -63,8 +72,8 @@ export default class RenderUser extends Component {
                 id="addFriendButton"
                 onClick={e=>{
                     e.preventDefault();
-                    this.props.addFriendship(this.props.match.params.id)
-                    this.props.history.push('/');
+                    this.props.addFriendship(this.props.match.params.id);
+                    this.props.history.push('/friends');
                 }}
             >
                 <img
@@ -73,6 +82,8 @@ export default class RenderUser extends Component {
                 />
             </button>
       </div>
+      <BackButton />
+      </React.Fragment>
     )
   }
 }

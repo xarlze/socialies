@@ -1,0 +1,28 @@
+#genericTitle{
+    position:absolute;
+    top:24%;
+    color:white;
+    font-size:50px;
+    left:50%;
+    width: 300px;
+    margin-left:-150px;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 5px;
+    opacity:0.8;
+    padding:2px;
+}
+#messageTitle{
+    position:absolute;
+    top:14%;
+    color:white;
+    font-size:50px;
+    left:50%;
+    width: 300px;
+    margin-left:-150px;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 5px;
+    opacity:0.8;
+    padding:2px;
+}
